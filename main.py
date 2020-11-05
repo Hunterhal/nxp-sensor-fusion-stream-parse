@@ -1,5 +1,9 @@
+#Code needs to be cleaned
+#The rotation packet (3) is selected
+
 import serial
 import numpy as np
+import matplotlib.pyplot as plt
 
 orientation_sensor_data = []
 new = False
@@ -13,6 +17,10 @@ yRot = 0
 zRot = 0
 
 packet_select = 3
+
+data_size = 10000
+data_counter = 0
+data_collect = np.zeros((3, data_size))
 
 def return_signed(val, max_bits = 16):
     if val & (1 << (max_bits - 1)):
@@ -29,6 +37,7 @@ with serial.Serial('COM5', 115200) as ser:
 
             for i in range(stream_length):
                 current_data = stream_data[i]
+                #Start or Stop
                 if stream_data[i] == 0x7E:
                     new = True
                     combine = 0
@@ -56,6 +65,10 @@ with serial.Serial('COM5', 115200) as ser:
                         zRot = float(return_signed(zRot)) * 0.05
 
                         print("%.2f, %.2f, %.2f" %(xRot, yRot, zRot))
+                        data_collect[:, data_counter] = np.array([xRot, yRot, zRot])
+                        data_counter += 1
+                        if(data_counter == data_size):
+                            raise ValueError("Maximum number of data is reached")
 
                     end = True
                     orientation_sensor_data = []
@@ -82,10 +95,16 @@ with serial.Serial('COM5', 115200) as ser:
                     else:
                         orientation_sensor_data.append(stream_data[i])
 
-            
     except KeyboardInterrupt:
-        print("\nClosing !!!")
-        ser.close()
+        pass
+    
+    except ValueError:
+        print("Maximum number of data is reached")
 
+    finally:
+        print("\nClosing Serial Port!!!")
+        with open('data_set.npy', 'wb') as f:
+            np.save(f, data_collect)
+        ser.close()
 
 
