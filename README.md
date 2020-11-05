@@ -8,9 +8,9 @@ Since devs follow this route page 71 and 72 are showing how to parse the data
 Remarks:   
     1) Stream coming continously from the port  
     2) Port read function reads given number of data  
-    3) The packet that is read may contaion "....~~...~~...." or "~.....~~.....~~" or "~~.....~~...." the contionus reading must be done  
+    3) The packet that is read may contaion "....\~\~...\~\~...." or "\~.....\~\~.....\~\~" or "\~\~.....\~\~...." the contionus reading must be done  
     4) Avoiding previous byte or next byte is important for robustness (may give unindex error)  
-    5) Since 0x7E = '~' is used for start and termination. 0x7E is coded as 0x7D and 0x5E and 0x7D is coded as 0x7D and 0x5D
+    5) Since 0x7E = '\~' is used for start and termination. 0x7E is coded as 0x7D and 0x5E and 0x7D is coded as 0x7D and 0x5D
     6) Step 5 eliminates the fixed packet size it cannot be used  
     7) Instead a small finite state machine like code can be used 
 
